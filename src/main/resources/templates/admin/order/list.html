@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
+<head th:replace="fragments :: head('订单管理 - ATRS')"></head>
+<body class="d-flex flex-column min-vh-100">
+    <nav th:replace="fragments :: nav(${currentUser})"></nav>
+
+    <div class="page-header">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2><i class="bi bi-ticket-perforated me-2"></i>订单管理</h2>
+                <a th:href="@{/admin}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>返回后台</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mb-5 animate-fade-in-up">
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <div th:if="${orderPage != null and !orderPage.isEmpty()}">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr><th>ID</th><th>订单号</th><th>用户</th><th>航班号</th><th>金额</th><th>状态</th><th>时间</th><th>操作</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="order : ${orderPage.content}">
+                            <td th:text="${order.id}"></td>
+                            <td><code th:text="${order.orderNo}"></code></td>
+                            <td th:text="${order.user.username}"></td>
+                            <td><strong th:text="${order.flight.flightNo}"></strong></td>
+                            <td class="price-text">¥<span th:text="${order.totalPrice}"></span></td>
+                            <td><span class="badge" th:classappend="'badge-' + ${order.status.name()}" th:text="${order.status.name()}"></span></td>
+                            <td th:text="${order.createdAt}"></td>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    <a th:href="@{/admin/order/detail/{id}(id=${order.id})}" class="btn btn-outline-primary btn-sm"><i class="bi bi-eye me-1"></i>详情</a>
+                                    <form th:action="@{/admin/order/cancel}" method="post"
+                                          th:if="${order.status.name() != 'CANCELLED' and order.status.name() != 'REFUNDED'}">
+                                        <input type="hidden" name="orderId" th:value="${order.id}">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm"
+                                                onclick="return confirm('确定取消该订单吗？将释放座位。')"><i class="bi bi-x-circle me-1"></i>取消</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mt-4">
+                <div>
+                    <a th:if="${orderPage.hasPrevious()}" th:href="@{/admin/order/list(page=${orderPage.number - 1})}" class="btn btn-outline-primary"><i class="bi bi-chevron-left me-1"></i>上一页</a>
+                    <span th:unless="${orderPage.hasPrevious()}" class="btn btn-outline-secondary disabled"><i class="bi bi-chevron-left me-1"></i>上一页</span>
+                </div>
+                <span class="fw-bold muted-text">第 <span th:text="${orderPage.number + 1}"></span> / <span th:text="${orderPage.totalPages}"></span> 页</span>
+                <div>
+                    <a th:if="${orderPage.hasNext()}" th:href="@{/admin/order/list(page=${orderPage.number + 1})}" class="btn btn-outline-primary">下一页<i class="bi bi-chevron-right ms-1"></i></a>
+                    <span th:unless="${orderPage.hasNext()}" class="btn btn-outline-secondary disabled">下一页<i class="bi bi-chevron-right ms-1"></i></span>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${orderPage == null or orderPage.isEmpty()}" class="text-center py-5">
+            <div class="empty-icon"><i class="bi bi-inbox"></i></div>
+            <p class="empty-state mt-3">暂无订单</p>
+        </div>
+    </div>
+
+    <footer th:replace="fragments :: footer" class="mt-auto"></footer>
+</body>
+</html>

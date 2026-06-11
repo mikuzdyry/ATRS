@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
+<head th:replace="fragments :: head('航班表单 - ATRS')"></head>
+<body class="d-flex flex-column min-vh-100">
+    <nav th:replace="fragments :: nav(${currentUser})"></nav>
+
+    <div class="page-header">
+        <div class="container">
+            <h2>
+                <span th:if="${flight.id == null}"><i class="bi bi-plus-circle me-2"></i>添加航班</span>
+                <span th:if="${flight.id != null}"><i class="bi bi-pencil-square me-2"></i>编辑航班</span>
+            </h2>
+        </div>
+    </div>
+
+    <div class="container mb-5 animate-fade-in-up">
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <form th:action="${flight.id == null ? @{/admin/flight/add} : @{/admin/flight/edit/{id}(id=${flight.id})}}"
+              method="post" th:object="${flight}">
+            <div class="card mb-4">
+                <div class="card-header"><i class="bi bi-info-circle me-2"></i>航班基本信息</div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">航班号</label>
+                            <input type="text" name="flightNo" class="form-control" th:value="*{flightNo}" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">航空公司</label>
+                            <input type="text" name="airline" class="form-control" th:value="*{airline}" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">飞行日期</label>
+                            <input type="date" name="flightDate" class="form-control" th:value="*{flightDate}" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">出发城市</label>
+                            <input type="text" name="departureCity" class="form-control" th:value="*{departureCity}" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">出发机场</label>
+                            <input type="text" name="departureAirport" class="form-control" th:value="*{departureAirport}" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">到达城市</label>
+                            <input type="text" name="arrivalCity" class="form-control" th:value="*{arrivalCity}" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">到达机场</label>
+                            <input type="text" name="arrivalAirport" class="form-control" th:value="*{arrivalAirport}" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">出发时间</label>
+                            <input type="time" name="departureTime" class="form-control" th:value="*{departureTime}" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">到达时间</label>
+                            <input type="time" name="arrivalTime" class="form-control" th:value="*{arrivalTime}" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">飞行时长(分钟)</label>
+                            <input type="number" name="durationMinutes" class="form-control" th:value="*{durationMinutes}" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">基础票价 (¥)</label>
+                            <input type="number" step="0.01" name="basePrice" class="form-control" th:value="*{basePrice}" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header"><i class="bi bi-ticket-perforated me-2"></i>舱位与票价</div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="border rounded-3 p-4" style="background: var(--gray-50);">
+                                <h6 class="fw-bold mb-3"><span class="badge badge-economy me-2">经济舱</span>ECONOMY</h6>
+                                <input type="hidden" name="seatClass" value="ECONOMY">
+                                <div class="mb-3">
+                                    <label class="form-label">座位数</label>
+                                    <input type="number" name="seatCount" class="form-control" value="150" required>
+                                </div>
+                                <div>
+                                    <label class="form-label">票价 (¥)</label>
+                                    <input type="number" step="0.01" name="seatPrice" class="form-control" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="border rounded-3 p-4" style="background: var(--gray-50);">
+                                <h6 class="fw-bold mb-3"><span class="badge badge-business me-2">商务舱</span>BUSINESS</h6>
+                                <input type="hidden" name="seatClass" value="BUSINESS">
+                                <div class="mb-3">
+                                    <label class="form-label">座位数</label>
+                                    <input type="number" name="seatCount" class="form-control" value="20" required>
+                                </div>
+                                <div>
+                                    <label class="form-label">票价 (¥)</label>
+                                    <input type="number" step="0.01" name="seatPrice" class="form-control" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary btn-lg"><i class="bi bi-check-lg me-1"></i>保存</button>
+                <a th:href="@{/admin/flight/list}" class="btn btn-outline-secondary btn-lg">取消</a>
+            </div>
+        </form>
+    </div>
+
+    <footer th:replace="fragments :: footer" class="mt-auto"></footer>
+</body>
+</html>

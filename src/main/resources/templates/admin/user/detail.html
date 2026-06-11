@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
+<head th:replace="fragments :: head('用户详情 - ATRS')"></head>
+<body class="d-flex flex-column min-vh-100">
+    <nav th:replace="fragments :: nav(${currentUser})"></nav>
+
+    <div class="container mt-4 mb-5 animate-fade-in-up">
+        <a th:href="@{/admin/user/list}" class="btn btn-outline-secondary btn-sm mb-3"><i class="bi bi-arrow-left me-1"></i>返回用户列表</a>
+
+        <div th:if="${user == null}" class="alert alert-warning">用户不存在</div>
+
+        <div th:if="${user != null}" th:object="${user}">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="text-center mb-4">
+                        <div class="profile-avatar">
+                            <span th:text="${user.realName != null ? #strings.substring(user.realName,0,1) : #strings.substring(user.username,0,1)}">U</span>
+                        </div>
+                        <h4 class="fw-bold" th:text="${user.realName != null ? user.realName : user.username}"></h4>
+                        <span th:if="*{role == 'ADMIN'}" class="badge badge-scheduled"><i class="bi bi-shield-check me-1"></i>管理员</span>
+                        <span th:if="*{role == 'USER'}" class="badge badge-economy"><i class="bi bi-person me-1"></i>普通用户</span>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header"><i class="bi bi-info-circle me-2"></i>详细信息</div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label muted-text">用户ID</label>
+                                    <p class="fw-bold" th:text="*{id}"></p>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label muted-text">用户名</label>
+                                    <p class="fw-bold" th:text="*{username}"></p>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label muted-text">真实姓名</label>
+                                    <p class="fw-bold" th:text="*{realName}"></p>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label muted-text">手机号</label>
+                                    <p class="fw-bold" th:text="*{phone}"></p>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label muted-text">邮箱</label>
+                                    <p class="fw-bold" th:text="*{email}"></p>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label muted-text">身份证号</label>
+                                    <p class="fw-bold" th:text="*{idCard}"></p>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label muted-text">注册时间</label>
+                                    <p class="fw-bold" th:text="*{createdAt}"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="fragments :: footer" class="mt-auto"></footer>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
+<head th:replace="fragments :: head('出错了 - ATRS')"></head>
+<body class="d-flex flex-column min-vh-100">
+    <nav th:replace="fragments :: nav(${currentUser})"></nav>
+    <div class="container mt-5 mb-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6 text-center animate-fade-in-up">
+                <div style="font-size:4rem; color: var(--danger); margin-bottom: 16px;">
+                    <i class="bi bi-exclamation-triangle"></i>
+                </div>
+                <h3 class="fw-bold mb-2">操作失败</h3>
+                <p class="muted-text mb-4" th:text="${message}">系统遇到了一些问题，请稍后再试</p>
+                <div class="d-flex justify-content-center gap-2">
+                    <a href="javascript:history.back()" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-1"></i>返回上一页
+                    </a>
+                    <a href="/" class="btn btn-primary">
+                        <i class="bi bi-house-door me-1"></i>回到首页
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer th:replace="fragments :: footer" class="mt-auto"></footer>
+</body>
+</html>

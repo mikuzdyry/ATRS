@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
+<head th:replace="fragments :: head('航班搜索 - ATRS')"></head>
+<body class="d-flex flex-column min-vh-100">
+    <nav th:replace="fragments :: nav(${currentUser})"></nav>
+
+    <div class="page-header">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2><i class="bi bi-search me-2"></i>搜索结果</h2>
+                <th:block th:if="${departureCity != null}">
+                    <div class="fw-bold" style="color: rgba(255,255,255,0.9);">
+                        <span th:text="${departureCity}"></span>
+                        <i class="bi bi-arrow-right mx-2"></i>
+                        <span th:text="${arrivalCity}"></span>
+                    </div>
+                </th:block>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mb-5">
+        <div th:if="${error}" class="alert alert-warning" th:text="${error}"></div>
+
+        <div th:if="${flights != null and !flights.isEmpty()}">
+            <div class="row">
+                <div class="col-lg-8" th:each="flight : ${flights}">
+                    <div class="card flight-card p-3 mb-3">
+                        <div class="row align-items-center">
+                            <div class="col-auto">
+                                <div class="airline-logo">
+                                    <span th:text="${#strings.substring(flight.airline,0,2)}"></span>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="flight-no" th:text="${flight.flightNo}"></div>
+                                <small class="text-muted" th:text="${flight.airline}"></small>
+                            </div>
+                            <div class="col text-center">
+                                <div class="fw-bold" th:text="${flight.departureTime}"></div>
+                                <small class="fw-bold text-muted" th:text="${flight.departureCity}"></small>
+                            </div>
+                            <div class="col-auto text-center">
+                                <div style="position:relative;width:100px;">
+                                    <div class="muted-text" style="font-size:0.75rem;" th:text="${flight.durationMinutes + ' 分钟'}"></div>
+                                    <div style="border-top:2px dashed var(--gray-300);margin:4px 0;position:relative;">
+                                        <i class="bi bi-airplane-fill position-absolute top-50 start-50 translate-middle" style="color:var(--primary);font-size:0.85rem;background:var(--white);padding:0 4px;"></i>
+                                    </div>
+                                    <small class="text-muted">直飞</small>
+                                </div>
+                            </div>
+                            <div class="col text-center">
+                                <div class="fw-bold" th:text="${flight.arrivalTime}"></div>
+                                <small class="fw-bold text-muted" th:text="${flight.arrivalCity}"></small>
+                            </div>
+                            <div class="col-auto text-end">
+                                <div class="price" th:text="'¥' + flight.basePrice"></div>
+                                <small class="text-muted">起</small>
+                            </div>
+                            <div class="col-auto ms-2">
+                                <a th:href="@{/flight/detail/{id}(id=${flight.id})}" class="btn btn-primary btn-sm">
+                                    查看详情 <i class="bi bi-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${flights == null or flights.isEmpty()}" class="text-center py-5 animate-fade-in">
+            <div class="empty-icon"><i class="bi bi-airplane"></i></div>
+            <p class="empty-state mt-3">暂无符合条件的航班</p>
+            <a href="/" class="btn btn-outline-primary"><i class="bi bi-arrow-left me-1"></i>重新搜索</a>
+        </div>
+    </div>
+
+    <footer th:replace="fragments :: footer" class="mt-auto"></footer>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
+<head th:replace="fragments :: head('登录 - ATRS')"></head>
+<body class="d-flex flex-column min-vh-100">
+    <nav th:replace="fragments :: nav(${currentUser})"></nav>
+    <div class="container">
+        <div class="card auth-card animate-fade-in-up">
+            <div class="card-header">
+                <i class="bi bi-airplane me-2"></i>用户登录
+            </div>
+            <div class="card-body">
+                <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+                <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+                <form method="post" th:action="@{/user/login}">
+                    <div class="mb-3">
+                        <label class="form-label">用户名</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-person text-muted"></i></span>
+                            <input type="text" name="username" class="form-control" required placeholder="请输入用户名">
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label">密码</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-lock text-muted"></i></span>
+                            <input type="password" name="password" class="form-control" required placeholder="请输入密码">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 btn-lg">
+                        <i class="bi bi-box-arrow-in-right me-1"></i>登录
+                    </button>
+                </form>
+                <div class="text-center mt-4">
+                    <span class="muted-text">还没有账号？</span>
+                    <a th:href="@{/user/register}" class="fw-bold">立即注册 <i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer th:replace="fragments :: footer" class="mt-auto"></footer>
+</body>
+</html>

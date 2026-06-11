@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
+<head th:replace="fragments :: head('确认订单 - ATRS')"></head>
+<body class="d-flex flex-column min-vh-100">
+    <nav th:replace="fragments :: nav(${currentUser})"></nav>
+
+    <div class="page-header">
+        <div class="container">
+            <div class="booking-step">
+                <div class="step done"><i class="bi bi-check"></i></div>
+                <div class="step-arrow done"></div>
+                <div class="step done"><i class="bi bi-check"></i></div>
+                <div class="step-arrow done"></div>
+                <div class="step active">3</div>
+            </div>
+            <h2><i class="bi bi-check-circle me-2"></i>确认订单</h2>
+        </div>
+    </div>
+
+    <div class="container mb-5 animate-fade-in-up">
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <div class="card mb-4" th:object="${order}">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <strong><i class="bi bi-receipt me-2" style="color:var(--primary);"></i>订单号：</strong>
+                    <span class="fw-bold" style="color:var(--primary);" th:text="*{orderNo}"></span>
+                </div>
+                <span class="badge" th:classappend="'badge-' + *{status.name()}" th:text="*{status.name()}"></span>
+            </div>
+            <div class="card-body p-4">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h6 class="fw-bold mb-3"><i class="bi bi-airplane me-1"></i>航班信息</h6>
+                        <div class="d-flex flex-column gap-2">
+                            <div><strong>航班号：</strong><span th:text="*{flight.flightNo}"></span> <small class="text-muted" th:text="*{flight.airline}"></small></div>
+                            <div><strong>日期：</strong><span th:text="*{flight.flightDate}"></span></div>
+                            <div><strong>行程：</strong><span th:text="*{flight.departureCity}"></span> <i class="bi bi-arrow-right mx-1"></i> <span th:text="*{flight.arrivalCity}"></span></div>
+                            <div><strong>时间：</strong><span th:text="*{flight.departureTime}"></span> - <span th:text="*{flight.arrivalTime}"></span></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold mb-3"><i class="bi bi-info-circle me-1"></i>订单信息</h6>
+                        <div class="d-flex flex-column gap-2">
+                            <div><strong>舱位：</strong>
+                                <span th:if="*{seatClass.name() == 'ECONOMY'}" class="badge badge-economy">经济舱</span>
+                                <span th:if="*{seatClass.name() == 'BUSINESS'}" class="badge badge-business">商务舱</span>
+                                <span th:if="*{seatClass.name() == 'FIRST'}" class="badge badge-first">头等舱</span>
+                            </div>
+                            <div><strong>乘客人数：</strong><span th:text="*{passengerCount}"></span> 位</div>
+                            <div><strong>联系人：</strong><span th:text="*{contactName}"></span> (<span th:text="*{contactPhone}"></span>)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <h6 class="fw-bold mb-2"><i class="bi bi-people me-1"></i>乘客列表</h6>
+                <table class="table">
+                    <thead><tr><th>姓名</th><th>证件号</th><th>手机号</th></tr></thead>
+                    <tbody>
+                        <tr th:each="p : *{passengers}">
+                            <td th:text="${p.name}"></td>
+                            <td th:text="${p.idCard}"></td>
+                            <td th:text="${p.phone}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="text-end mt-4 pt-3" style="border-top: 1px solid var(--gray-200);">
+                    <span class="muted-text me-2">订单总额</span>
+                    <h3 class="price-text d-inline">¥<span th:text="*{totalPrice}"></span></h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <form th:action="@{/order/cancel/{no}(no=${order.orderNo})}" method="post" class="d-inline">
+                <button type="submit" class="btn btn-outline-danger" onclick="return confirm('确定要取消该订单吗？')">
+                    <i class="bi bi-x-circle me-1"></i>取消订单
+                </button>
+            </form>
+            <form th:action="@{/booking/pay/{no}(no=${order.orderNo})}" method="post" th:if="${order.status.name() == 'PENDING'}">
+                <button type="submit" class="btn btn-success btn-lg">
+                    <i class="bi bi-credit-card me-1"></i>确认支付
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <footer th:replace="fragments :: footer" class="mt-auto"></footer>
+</body>
+</html>

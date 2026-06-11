@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
+<head th:replace="fragments :: head('航班详情 - ATRS')"></head>
+<body class="d-flex flex-column min-vh-100">
+    <nav th:replace="fragments :: nav(${currentUser})"></nav>
+
+    <div class="container mt-4 mb-5 animate-fade-in-up">
+        <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm mb-3">
+            <i class="bi bi-arrow-left me-1"></i>返回
+        </a>
+
+        <div class="card mb-4" th:object="${flight}">
+            <div class="card-header py-3 text-white" style="background: var(--primary-gradient);">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="bi bi-airplane-engines me-2"></i>
+                        <span th:text="*{airline}"></span> — <span th:text="*{flightNo}"></span>
+                    </h5>
+                    <span class="badge badge-scheduled" th:text="*{status}"></span>
+                </div>
+            </div>
+            <div class="card-body p-4">
+                <div class="row align-items-center text-center">
+                    <div class="col-md-4">
+                        <h3 class="fw-bold" th:text="*{departureCity}"></h3>
+                        <p class="muted-text mb-1" th:text="*{departureAirport}"></p>
+                        <h2 class="fw-bold" style="color:var(--primary);" th:text="*{departureTime}"></h2>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="muted-text mb-2" th:text="*{durationMinutes + ' 分钟'}"></div>
+                        <div style="position:relative; padding: 0 20px;">
+                            <div style="border-top: 2px solid var(--primary); opacity: 0.2;"></div>
+                            <i class="bi bi-airplane-fill position-absolute top-50 start-50 translate-middle" style="color:var(--primary); font-size:1.2rem; background:var(--white); padding:0 8px;"></i>
+                        </div>
+                        <small class="text-muted">直飞</small>
+                    </div>
+                    <div class="col-md-4">
+                        <h3 class="fw-bold" th:text="*{arrivalCity}"></h3>
+                        <p class="muted-text mb-1" th:text="*{arrivalAirport}"></p>
+                        <h2 class="fw-bold" style="color:var(--primary);" th:text="*{arrivalTime}"></h2>
+                    </div>
+                </div>
+                <div class="text-center mt-3">
+                    <span class="badge badge-scheduled" style="font-size:0.9rem;">
+                        <i class="bi bi-calendar3 me-1"></i><span th:text="*{flightDate}"></span>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <h4 class="mb-3 fw-bold"><i class="bi bi-ticket-perforated me-2" style="color:var(--primary);"></i>选择舱位</h4>
+        <div class="row" th:if="${flight.seats != null and !flight.seats.isEmpty()}">
+            <div class="col-md-4 mb-3" th:each="seat : ${flight.seats}">
+                <div class="card seat-card h-100" th:classappend="${seat.availableSeats == 0} ? 'border-danger' : ''">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-2">
+                            <span class="badge" th:classappend="'badge-' + ${seat.seatClass.name()}"
+                                  th:text="${seat.seatClass == 'ECONOMY' ? '经济舱' : (seat.seatClass == 'BUSINESS' ? '商务舱' : '头等舱')}"></span>
+                        </div>
+                        <h2 class="price-text mb-1" th:text="'¥' + seat.price"></h2>
+                        <p class="muted-text mb-3">
+                            剩余 <strong th:text="${seat.availableSeats}" th:classappend="${seat.availableSeats > 10} ? 'text-success' : 'text-danger'"></strong>
+                            / <span th:text="${seat.seatCount}"></span> 座
+                        </p>
+                        <th:block th:if="${seat.availableSeats > 0}">
+                            <th:block th:if="${currentUser != null}">
+                                <a th:href="@{/booking/select/{flightId}(flightId=${flight.id}, seatClass=${seat.seatClass})}"
+                                   class="btn btn-primary w-100">
+                                    <i class="bi bi-cart-plus me-1"></i>立即预订
+                                </a>
+                            </th:block>
+                            <th:block th:if="${currentUser == null}">
+                                <a th:href="@{/user/login}" class="btn btn-outline-primary w-100">登录后预订</a>
+                            </th:block>
+                        </th:block>
+                        <div th:if="${seat.availableSeats == 0}" class="text-danger fw-bold mt-2">
+                            <i class="bi bi-x-circle me-1"></i>已售罄
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${flight.seats == null or flight.seats.isEmpty()}" class="text-center py-5">
+            <p class="muted-text">暂无舱位信息</p>
+        </div>
+    </div>
+
+    <footer th:replace="fragments :: footer" class="mt-auto"></footer>
+</body>
+</html>
