@@ -1,0 +1,9 @@
+atrs:
+  llm:
+    api-key: ${DEEPSEEK_API_KEY:sk-placeholder}
+    api-url: https://api.deepseek.com/v1/chat/completions
+    model: deepseek-chat
+
+logging:
+  level:
+    com.xxx.atrs: INFO

@@ -1,0 +1,15 @@
+package com.xxx.atrs.common.dto;
+
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
+
+@Data
+public class PassengerDTO {
+    @NotBlank(message = "乘客姓名不能为空")
+    private String name;
+
+    @NotBlank(message = "证件号不能为空")
+    private String idCard;
+
+    private String phone;
+}

@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: atrs-flight-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+      config:
+        server-addr: localhost:8848
+        file-extension: yaml
+        shared-configs:
+          - data-id: common-config.yaml
+            refresh: true
+
+server:
+  port: 8082

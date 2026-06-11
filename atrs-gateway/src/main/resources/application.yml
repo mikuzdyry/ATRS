@@ -1,0 +1,39 @@
+spring:
+  profiles:
+    active: default
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        # 用户服务
+        - id: user-service
+          uri: lb://atrs-user-service
+          predicates:
+            - Path=/api/user/**
+        # 航班服务
+        - id: flight-service
+          uri: lb://atrs-flight-service
+          predicates:
+            - Path=/api/flight/**
+        # 订单服务
+        - id: order-service
+          uri: lb://atrs-order-service
+          predicates:
+            - Path=/api/order/**
+        # 通知服务
+        - id: notification-service
+          uri: lb://atrs-notification-service
+          predicates:
+            - Path=/api/notification/**
+        # LLM 服务
+        - id: llm-service
+          uri: lb://atrs-llm-service
+          predicates:
+            - Path=/api/llm/**
+
+logging:
+  level:
+    com.xxx.atrs: DEBUG

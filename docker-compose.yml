@@ -1,0 +1,127 @@
+version: '3.8'
+
+services:
+  # ===== MySQL Databases =====
+  mysql-user:
+    image: mysql:8.0
+    container_name: atrs-mysql-user
+    environment:
+      MYSQL_ROOT_PASSWORD: atrs123456
+      MYSQL_DATABASE: atrs_user_db
+      TZ: Asia/Shanghai
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-user-data:/var/lib/mysql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mysql-flight:
+    image: mysql:8.0
+    container_name: atrs-mysql-flight
+    environment:
+      MYSQL_ROOT_PASSWORD: atrs123456
+      MYSQL_DATABASE: atrs_flight_db
+      TZ: Asia/Shanghai
+    ports:
+      - "3308:3306"
+    volumes:
+      - mysql-flight-data:/var/lib/mysql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mysql-order:
+    image: mysql:8.0
+    container_name: atrs-mysql-order
+    environment:
+      MYSQL_ROOT_PASSWORD: atrs123456
+      MYSQL_DATABASE: atrs_order_db
+      TZ: Asia/Shanghai
+    ports:
+      - "3309:3306"
+    volumes:
+      - mysql-order-data:/var/lib/mysql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mysql-notification:
+    image: mysql:8.0
+    container_name: atrs-mysql-notification
+    environment:
+      MYSQL_ROOT_PASSWORD: atrs123456
+      MYSQL_DATABASE: atrs_notification_db
+      TZ: Asia/Shanghai
+    ports:
+      - "3310:3306"
+    volumes:
+      - mysql-notification-data:/var/lib/mysql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ===== Nacos =====
+  nacos:
+    image: nacos/nacos-server:v2.3.2
+    container_name: atrs-nacos
+    environment:
+      MODE: standalone
+      PREFER_HOST_MODE: hostname
+      SPRING_DATASOURCE_PLATFORM: mysql
+      MYSQL_SERVICE_HOST: mysql-user
+      MYSQL_SERVICE_PORT: 3306
+      MYSQL_SERVICE_DB_NAME: nacos_config
+      MYSQL_SERVICE_USER: root
+      MYSQL_SERVICE_PASSWORD: atrs123456
+      NACOS_AUTH_ENABLE: "false"
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+    depends_on:
+      mysql-user:
+        condition: service_healthy
+
+  # ===== Seata Server =====
+  seata:
+    image: seataio/seata-server:1.8.0
+    container_name: atrs-seata
+    environment:
+      SEATA_PORT: 8091
+      STORE_MODE: db
+      STORE_DB_URL: jdbc:mysql://mysql-order:3306/atrs_order_db?useUnicode=true
+      STORE_DB_USERNAME: root
+      STORE_DB_PASSWORD: atrs123456
+      SEATA_IP: seata
+    ports:
+      - "8091:8091"
+      - "7091:7091"
+    depends_on:
+      mysql-order:
+        condition: service_healthy
+    command: >
+      sh -c "
+      until mysqladmin ping -h mysql-order -uroot -patrs123456 --silent; do
+        echo 'Waiting for MySQL...'; sleep 3;
+      done;
+      /seata-server/bin/seata-server.sh
+      "
+
+volumes:
+  mysql-user-data:
+  mysql-flight-data:
+  mysql-order-data:
+  mysql-notification-data:
